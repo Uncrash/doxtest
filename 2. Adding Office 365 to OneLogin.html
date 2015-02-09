@@ -1,0 +1,22 @@
+<h3>Adding Office 365</h3>
+<p>To add Office 365 to your OneLogin account, start at your dashboard portal and then do the following:</p>
+<ol>
+	<li>Go to <strong>Apps &gt; Add Apps</strong>.</li>
+	<li>Search for <strong>Office 365</strong> and select it.</li>
+	<li>
+		<p>On the <strong>Add App</strong> page, select <strong>WS-Federation</strong> under&nbsp;<strong>Connectors</strong>.</p>
+		<p><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/add_o365.png" alt="" /></p>
+	</li>
+	<li>Click <strong>Save</strong>.</li>
+	<li>Select the <strong>Parameters</strong> tab.</li>
+	<li>
+		<p>Ensure that the <strong>Email</strong>, <strong>ImmutableID</strong>, and <strong>User Principal Name</strong><em>&nbsp;</em>are mapped to the OneLogin fields&nbsp;<em>Email</em>, <em>AD ID</em>, and <em>Email</em>, respectively.&nbsp;</p>
+		<p><strong>Note.</strong> Use <em>userPrincipalName</em> as the OneLogin value for User Principal Name if you are not using Active Directory.</p>
+		<p><strong>Groups</strong> and <strong>Licenses</strong> are left blank by default and are configurable based on your organization's specific needs.</p>
+		<p><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/params_o365.png" alt="" /></p>
+	</li>
+	<li>
+		<p>Go to&nbsp;the <strong>SSO</strong> tab and copy the <strong>WS-Federation Web SSO Endpoint</strong>.</p>
+		<p>You will&nbsp;give this to your OneLogin support team when&nbsp;they assist you through the Windows Powershell script configuration process.<img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/sso_o365.png" alt="" /></p>
+	</li>
+</ol>

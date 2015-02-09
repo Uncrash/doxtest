@@ -1,0 +1,65 @@
+<h3>Preparing Your Directory</h3>
+<!--in what sense is this "preparing your directory"/-->
+<p>Before you can set up single sign-on for Office 365, you must&nbsp;confirm that your Office 365 users'&nbsp;email addresses use the same domain as&nbsp;those within OneLogin,&nbsp;and that&nbsp;the domain is&nbsp;registered with&nbsp;your organization&rsquo;s Office 365 account. &nbsp;</p>
+<p>Typically this domain is&nbsp;be that of your organization. For example, if your organization&rsquo;s domain name is <em>acmeinc</em>, all of your user email domains, as well as the custom domain registered with&nbsp;Office 365, must be <em>@acmeinc.com</em>. These&nbsp;domains must match. If they don&rsquo;t, Office 365 will not recognize&nbsp;your OneLogin users as&nbsp;valid users, won't&nbsp;assign licenses to them, and will prevent them from&nbsp;authenticating through single sign-on. Nor will they be provisioned to Office 365 through OneLogin.</p>
+<h3>Preparing Office 365</h3>
+<p>After Active Directory has been configured and prepared for Office 365, confirm&nbsp;the following:</p>
+<ul>
+	<li>Your Office 365 account&nbsp;allows for Single Sign-On configuration. Not all Office 365 plans do. Go to Microsoft's Office 365 plan details page to check whether or not the account plan allows for it: <a href="http://office.microsoft.com/en-us/business/compare-all-office-365-for-business-plans-FX104051403.aspx">http://office.microsoft.com/en-us/business/compare-all-office-365-for-business-plans-FX104051403.aspx</span></a></li>
+	<li><span class="s1">The domain of your organization&rsquo;s OneLogin account must be verified through Office 365&rsquo;s dashboard. This domain, along with all user email domains, MUST match in order to allow both single-sign on and provisioning. For more information on registering a domain, proceed to this article: <a href="http://office.microsoft.com/en-us/office365-suite-help/set-up-and-manage-domains-in-office-365-enterprise-and-office-365-midsize-business-ha102851067.aspx">office.microsoft.com/en-us/office365-suite-help/set-up-and-manage-domains-in-office-365-enterprise-and-office-365-midsize-business-ha102851067.aspx<</a>.<br /><strong><em>Note:</em></strong> <em>The </em><em>onMicrosoft</em><em> domain cannot be used for this purpose.</em></li>
+	<li>The domain being registered with Office 365 is NOT federated. If so, proceed to step 7a on how to un-federate a domain.</li>
+	<li>You have a global administrator account that lies outside of a federated domain.&nbsp;We&nbsp;recommend that you use an&nbsp;onMicrosoft account.<br /></span></li>
+</ul>
+<p><strong>Note:</strong> <em>If you have a pre-existing Office 365 account with users already configured, OneLogin will check its database of users against the pre-existing user base and </em><em>match the users with identical</em><em> profiles in order to prevent user redundancy and also to streamline the import process.</em></span></p>
+<h3>Configuring Federation</h3>
+<p>For prerequisites, see: <a href="http://technet.microsoft.com/library/jj151815.aspx">http://technet.microsoft.com/library/jj151815.aspx</a></p>
+<p>Microsoft Online Services Sign-In Assistant for IT Professionals: <a href="http://www.microsoft.com/en-us/download/details.aspx?id=41950">http://www.microsoft.com/en-us/download/details.aspx?id=41950</a></p>
+<p>Windows Azure Active Directory Module for Windows Powershell:<br />32 Bit:&nbsp;<a href="/hc/admin/articles/203748160-Setting-up-SAML-for-Office-365/go.microsoft.com/fwlink/p/?linkid=236298">go.microsoft.com/fwlink/p/?linkid=236298</a><br />64 Bit:&nbsp;<a href="/hc/admin/articles/203748160-Setting-up-SAML-for-Office-365/go.microsoft.com/fwlink/p/?linkid=236297">go.microsoft.com/fwlink/p/?linkid=236297</a></p>
+<p>With prerequisites met, contact your OneLogin support team to properly federate your account&rsquo;s domain. This requires the Windows Powershell modules discussed previously, as well as the <strong>WS-Federation Web SSO Endpoint</strong>.</p>
+<h3>Defederating Your Domain</h3>
+<p>The domain being associated with Office 365 must be managed by Office 365 before single sign-on and provisioning can be enabled for your users.&nbsp; Such management requires that the domain not be federated by ADFS or by another IdP service. If your domain is already federated, you must disable&nbsp;federation&nbsp;before you can&nbsp;enable single sign-on for Office 365. Defederation is required for single sign-on, but not&nbsp;for&nbsp;enabling user provisioning into Office 365.</p>
+<p>In order to disable&nbsp;federation for your domain, do the following. This process requires Windows Powershell (<a href="http://technet.microsoft.com/en-us/library/ff950685.aspx">http://technet.microsoft.com/en-us/library/ff950685.aspx</a>).</p>
+<p><strong>If the Domain is Federated with ADFS:</strong></p>
+<ol>
+	<li>Go into the ADFS server.</li>
+	<li>Open PowerShell.</li>
+	<li>Run:
+		<pre><code>Import-Module MSOnline<code> </code></code></pre>
+	</li>
+	<li>Run:
+		<pre><code>Connect-MSOLService<code></code></code></pre>
+	</li>
+	<li>Enter the Global Administrator credentials for an&nbsp;account that is not within the federated domain.</li>
+	<li>Run:<br />
+		<pre><code>Get-MSOLDomai</code></pre>
+	</li>
+	<!--Is the following step telling user to select a checkbox from a non-terminal UI? select a domain from a list of domains in terminal?  or is it saying, "Make note of the domain that is currently set to Federated?"-->
+	<li>Check which domain is currently set to <em>Federated.</em></li>
+	<li>Run:<br />
+		<pre><code>Set-MsolADFSContext -Computer {AD FS 2.0 server name}</code></pre>
+	</li>
+	<li>Run:&nbsp;
+		<pre><code>Convert-MSOLDomainToStandard -DomainName acmeinc.us - SkipUserConversion:$true -PasswordFile C:\userpasswords.txt<br /></code></pre>
+		The path for the password file can be any valid path.</li>
+		<li>Run:<br />
+			<pre><code>Set-MSOLDomainAuthentication -Authentication Managed -DomainName acmeinc.us</code></pre>
+		</li>
+	</ol>
+	<p><strong>If The Domain Is Federated With Another IdP:</strong></p>
+	<ol>
+		<li>Open PowerShell.</li>
+		<li>Run:<br />
+			<pre><code>Import-Module MSOnline</code></pre>
+		</li>
+		<li>Run:<br />
+			<pre><code>Connect-MSOLService</code></pre>
+		</li>
+		<li>Enter Gllobal Administrator credentials for an account that is not in the federated domain.</li>
+		<li>Run:<br />
+			<pre><code>Get-MSOLDomain</code></pre>
+		</li>
+		<li>Check which domain is currently set to Federated.</li>
+		<li>Run:
+			<pre><code>Set-MSOLDomainAuthentication -Authentication Managed -DomainName acmeinc.us</code></pre>
+		</li>
+	</ol>

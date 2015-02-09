@@ -1,0 +1,67 @@
+<h3>Introduction</h3>
+<p class="p1"><span class="s1">No longer is Microsoft&rsquo;s DirSync required to migrate the active directory user roster over to Office 365. Everything is taken care of through the OneLogin dashboard and requires no external configuration outside of OneLogin and the Office 365.</span></p>
+<h3>Configuring OneLogin for Provisioning to Office 365</h3>
+<ol>
+	<li>Close any Office 365 applications that are open in your browser.</li>
+	<li>Go to <strong>Apps &gt; Company Apps &gt; Office 365</strong>.</li>
+	<li>Select the <strong>Configuration</strong> tab.</li>
+	<li>Click <strong>Give Consent to OneLogin</strong>.<br /><br />This will enable OneLogin to access the Windows Azure Active Directory for Office 365.<img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/o365_consent.png" alt="" /><br />If no Office 365 applications are open in your browser, you are directed to the Windows Azure Active Directory login page.&nbsp;</li>
+	<li>Enter your Office 365 administrative login (<em>.onmicrosoft.com</em> Global Admin account) and password.</li>
+	<li>A dialogue will prompt you to click <strong>Grant Access</strong>.<br /><br />When you have granted access, OneLogin returns you to the Configuration tab. Giving consent enables OneLogin to perform most of the functionality required to manage user access to Office 365, but some PowerShell functions require that OneLogin also pass the API user name and password.</li>
+	<li>Under <strong>API User Name</strong> and <strong>API Password</strong>, enter the same .onmicrosoft.com Global Account login&nbsp;and password.<br /><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/o365_api_creds.png" alt="" /></li>
+	<li>Click <strong>Connect</strong>.<br /><br />If your configuration is correct, the API status changes to <strong>Connected</strong>.<br /><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/o365_connected.png" alt="" /></li>
+</ol>
+<p class="p1"><span class="s1"><strong>Note:</strong> <em>If you configured and connected Office 365 for OneLogin before the Give Consent functionality was released, consent was given implicitly.<span class="Apple-converted-space">&nbsp; </span>If, in this situation, you disconnect the Office 365 connector or change your API user name or password, you will be prompted to give consent when you try to reconnect or try to connect with the new credentials.</em></span></p>
+<p class="p1"><span class="s1"><strong><em>Note:</em></strong><em> If you are federating multiple domains with Office 365, you need a separately configured connector for each domain, along with a separately configured X.509 Certificate. Navigate to Settings &gt; SAML to generate multiple certificates.</em></span></p>
+<p class="p1"><span class="s1"><strong>Note. </strong><em>Depending on your Office 365 security settings, you may have to reset and re-enter your account owner password every 3 months, as required by Microsoft&rsquo;s security policy.</em></span></p>
+<h3>Automatic User Provisioning</h3>
+<p >The most efficient way to provision out Office 365 is through mappings via Roles and Groups. It will allow a large user base to be quickly paired up with licenses without having to manually update each user individually.</span></p>
+<p>If you are using an external directory,&nbsp;create a Group (security group if using Active Directory) that will contain all of the Office 365 users. For simplicity's sake, lets call this group <em>Office 365.</em></span></p>
+<p>To begin the process for automatic provisioning, go to the OneLogin dashboard portal and do the following:</span></p>
+<ol>
+	<li>Go to <strong>Users &gt; Groups</strong>.</li>
+	<li>Click <strong>New Group</strong>.</li>
+	<li>Give this group a name. We named ours <em>Office 365</em>.<br /><br />If you have a group within an associated directory, this group name should match the name within that group.</li>
+	<li>Click <strong>Save</strong>.<br /><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/groups_o365.png" alt="" /><br />If you have a security policy&nbsp;you wish to affiliate with this group, you may apply it now.</li>
+	<li>Go to <strong>Users &gt; Roles.</strong></li>
+	<li>Click <strong>New Role</strong> to create a new role.</li>
+	<li>Give your role a name and associate it with Office 365 by selecting Office 365 from the list.<img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/roles_o365.png" alt="" /></li>
+	<li>Click <strong>Save</strong>.</li>
+	<li>Go to <strong>Users &gt; Mappings</strong>.</li>
+	<li>Click <strong>New Mapping</strong>.</li>
+	<li>Give your mapping a name (we've chosen <em>Office 365 Mapping</em> for simplicity) and then create a mapping that associates users in the <em>Office 365</em> group with the <em>Office 365</em> role.<br /><br /><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/mapping_o365.png" alt="" /><br />
+		<p>Note how when the <em>Condition = Memberof &gt; Contains &gt; Office 365, Perform these actions = Set role &gt; Office 365</em>, it's saying that 'Anytime a user is a member of the group Office 365, set their role to &lsquo;Office 365&rsquo;. Mappings are flexible, so tailor them to your personal user situations.</span></p>
+	</li>
+	<li>Click <strong>Save</strong>.</span></li>
+	<li>Back in the <strong>Mappings</strong> page, click <strong>Reapply All Mappings</strong> to confirm and refresh the mapped entitlements.<br /><br />This should always be done after creating a new entitlement or updating an existing one just to ensure the mappings are correctly confirmed.</span></li>
+</ol>
+<p>At this point, everyone within the Role of Office 365 should be successfully provisioned with a license and all applications within Office 365.</span></p>
+<h3>Manual User Provisioning</h3>
+<p>Manually provisioning a user with Office 365 is a quick process that involves going into the user&rsquo;s page and providing them with just the application. This can also be done when the user is created within OneLogin and not imported from a directory.</span></p>
+<p>In the dashboard portal, do the following:</span></p>
+<ol>
+	<li>Go to <strong>Users</strong> and select a user.</li>
+	<li>Select the <strong>Applications</strong> tab.</li>
+	<li>In the <strong>Roles</strong> section, select <em><em>Office 365.<br /><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/manprov_o365.png" alt="" /><br /></em></em></li>
+</ol>
+<p>This will immediately provision the user with an Office 365 license which, depending on the administrative settings found in <strong>Apps &gt; All Apps &gt; <em>Office 365</em> &gt; Provisioning</strong>, may need to be manually approved from &lsquo;Pending&rsquo; to &lsquo;Provisioned&rsquo; in <strong>Users &gt; Provisioning</strong>.&nbsp;</p>
+<h3>Entitlement Provisioning</h3>
+<p>Within the Office 365 connector page, provisioning can be accomplished through entitlement mappings. This allows for a tighter degree of control over not only what groups are provisioned Office 365, but also what licenses are provisioned out as well. </span></p>
+<p>In the dashboard portal, do the following:</span></p>
+<ol>
+	<li>Go to <strong>Company Apps &gt; Office 365</strong>.</li>
+	<li>Select the <strong>Parameters</strong> tab.</li>
+	<li>Click the <strong>Licenses</strong> field to bring up the field editor.</li>
+	<li>Click <strong>Include in User Provisioning</strong>.<br /><em><em><em><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/licenses_o365.png" alt="" /><br /></em></em></em>
+		<p>This is useful in cases where a group of users will all need access to Office 365 per their groups, but will only need to use certain applications within Office 365. In the example above, we&rsquo;ve selected the full suite of potential Office 365 Licenses to provision out to users.</p>
+	</li>
+	<li>Click <strong>Save</strong>.</li>
+	<li>Select the <strong>Rules</strong> tab.</li>
+	<li>Click <strong>New Rule&nbsp;</strong>to bring up the <strong>New Mapping</strong>&nbsp;editor.</li>
+	<li>Name your mapping and then create a mapping that associates users or a group of users&nbsp;with&nbsp;the desired licenses.<br /><em><em><em><em><img src="https://onelogin-screenshots.s3.amazonaws.com/app_specific/o365/deployment/rules_o365.png" alt="" /><br /><br /></em></em></em></em>
+		<p>The example above&nbsp;maps a user with the name of &lsquo;Josh Ames&rsquo; to licenses for Yammer and the Office suite, regardless of the established role and Office 365 mapping.<br /><br /></p>
+		<p>Note how when the <em>Condition = DistinguishedName &gt; equals &gt; Josh Ames, Perform these actions = Set Licenses &gt; Yammer / Office Web Apps / Office Professional</em>, it's saying that &lsquo;If the provisioning encounters a User named Josh Ames, assign the selected licenses to the user&rsquo;. Mappings are flexible, so tailor them to your personal user and organization&rsquo;s situations.</p>
+	</li>
+	<li>Click&nbsp;<strong>Show affected users</strong> to see which users will be affected by your configuration before you commit to any mappings.</li>
+	<li>Click <strong>Save</strong> to confirm your mapping.</li>
+</ol>
